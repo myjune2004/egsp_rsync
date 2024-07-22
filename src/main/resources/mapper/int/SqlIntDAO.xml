@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SqlIntDAO">
+    <select id="selectDataCount" parameterType="String" resultType="Long">
+        SELECT count(1) FROM ${tableName}
+    </select>
+
+    <update id="truncateTable" parameterType="String">
+        TRUNCATE TABLE ${tableName} RESTART IDENTITY CASCADE
+    </update>
+
+    <delete id="delete" parameterType="DeleteInfoVO">
+        DELETE FROM ${tableName} WHERE ${where}
+    </delete>
+
+    <update id="selectInsert" parameterType="HashMap">
+        INSERT INTO ${envrTableName} SELECT * FROM ${linkTableName}
+    </update>
+
+    <update id="selectInsertColumns" parameterType="HashMap">
+        INSERT INTO ${envrTableName} (${columns}) SELECT ${columns} FROM ${linkTableName}
+    </update>
+
+    <select id="selectColumnDesc" parameterType="String" resultType="ColumnDescVO">
+        SELECT
+              attname AS column_name
+            , atttypid::regtype  AS data_type
+            , attnotnull::varchar as not_null
+        FROM   pg_attribute
+        WHERE  attrelid = #{tableName}::regclass
+            AND attnum > 0
+            AND NOT attisdropped
+        ORDER  BY attnum
+    </select>
+</mapper>

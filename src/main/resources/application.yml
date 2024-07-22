@@ -22,6 +22,15 @@ spring:
     username: ${spring.username}
     password: ${spring.password}
 
+gisen:
+  task:
+    thread-count: 10
+    run-check: 10000
+    stop-check: 60000
+
+sync:
+  work-path: '\\172.30.1.4\nas_2tb\egsp_int_nas\rsync_copyout_dir'
+
 logging:
   level:
     root: info

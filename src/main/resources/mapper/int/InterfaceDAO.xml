@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="InterfaceDAO">
+    <select id="selectInterface" parameterType="String" resultType="InterfaceVO">
+        SELECT
+               intrfc_id
+             , intrfc_nm
+             , sourc_sys_nm
+             , sourc_sys_abrv
+             , tgrt_table_nm
+             , loading_ty
+             , link_ty
+             , data_delimiter
+             , header_yn
+             , column_ct
+        FROM biz.tb_intrfc_main
+        WHERE dele_yn = 'N'
+          AND intrfc_id = #{intrfcId}
+    </select>
+</mapper>

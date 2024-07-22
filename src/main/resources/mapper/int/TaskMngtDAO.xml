@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TaskMngtDAO">
+    <select id="selectToRunningTaskOne" resultType="SyncTaskMngtVO">
+         <![CDATA[
+        SELECT
+              task_id
+             ,task_cd
+             ,task_prmtr
+             ,task_sttus
+             ,task_cmplt_yn
+             ,exec_srvr_id
+             ,to_char(begin_dt, 'YYYY-MM-DD HH24:MI:SS') as begin_dt
+             ,to_char(end_dt, 'YYYY-MM-DD HH24:MI:SS') as end_dt
+        FROM biz.tb_task_mngt_rsync
+        WHERE dele_yn = 'N'
+          AND task_cmplt_yn = 'N'
+          AND (task_sttus = 'TST010' OR task_sttus = 'TST020')
+        ORDER BY task_id
+            LIMIT 1
+        ]]>
+    </select>
+
+
+    <select id="selectTaskCancel" parameterType="String" resultType="SyncTaskMngtVO">
+        SELECT
+            task_id
+        FROM biz.tb_task_mngt_rsync
+        WHERE exec_srvr_id = #{serverId}
+          AND  task_sttus ='TST050'
+        ORDER BY begin_dt ASC
+            LIMIT 1
+    </select>
+
+    <insert id="insertTask" parameterType="SyncTaskMngtVO" useGeneratedKeys="true" keyProperty="taskId">
+        <![CDATA[
+        INSERT INTO biz.tb_task_mngt_rsync (
+            "task_cd",
+            "task_prmtr",
+            "task_sttus",
+            "task_cmplt_yn",
+            "exec_srvr_id"
+        )
+        VALUES
+            (
+                #{taskCd},
+                #{taskPrmtr, jdbcType=OTHER, typeHandler=kr.go.me.egis.egsp.rsync.biz.dao.JSONTypeHandlerPg},
+                #{taskSttus},
+                #{taskCmpltYn},
+                #{execSrvrId}
+            )
+        ]]>
+    </insert>
+
+    <update id="updateTask" parameterType="SyncTaskMngtVO">
+        UPDATE
+        biz.tb_task_mngt_rsync
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskCd != null">task_cd = #{taskCd},</if>
+            <if test="taskSttus != null">task_sttus = #{taskSttus},</if>
+            <if test="taskCmpltYn != null">task_cmplt_yn = #{taskCmpltYn},</if>
+            <if test="execSrvrId != null">exec_srvr_id = #{execSrvrId},</if>
+            <if test="beginDt != null">begin_dt = to_timestamp(#{beginDt},'YYYY-MM-DD HH24:MI:SS') at time zone 'Asia/Seoul',</if>
+            <if test="endDt != null">end_dt = to_timestamp(#{endDt},'YYYY-MM-DD HH24:MI:SS') at time zone 'Asia/Seoul',</if>
+            <if test="deleYn != null">dele_yn = #{deleYn},</if>
+            <if test="deleDt != null">dele_dt = to_timestamp(#{deleDt}, 'YYYY-MM-DD HH24:MI:SS') at time zone 'Asia/Seoul',</if>
+            <if test="deleUserId != null">dele_user_id = #{deleUserId},</if>
+        </trim>
+        WHERE task_id = #{taskId}
+    </update>
+
+    <update id="updateTaskStart" parameterType="Long">
+        UPDATE
+            biz.tb_task_mngt_rsync
+        SET
+            task_sttus='TST030'
+        WHERE
+            task_id = #{taskId}
+    </update>
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SqlExtDAO">
+    <select id="selectDataCount" parameterType="String" resultType="Long">
+        SELECT count(1) FROM ${tableName}
+    </select>
+
+    <update id="truncateTable" parameterType="String">
+        TRUNCATE TABLE ${tableName} RESTART IDENTITY CASCADE
+    </update>
+
+    <delete id="delete" parameterType="DeleteInfoVO">
+        DELETE FROM ${tableName} WHERE ${where}
+    </delete>
+</mapper>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SyncIntDAO">
+    <select id="selectSyncRequest" parameterType="SyncInfoVO" resultType="SyncInfoVO">
+        SELECT
+              sync_id
+             ,intrfc_id
+             ,sourc_file_nm
+             ,table_full_nm
+        FROM biz.tb_sync_info
+        WHERE intrfc_id = #{intrfcId}
+          AND sourc_file_nm =  #{sourcFileNm}
+    </select>
+
+    <insert id="insertSyncRequest" parameterType="SyncInfoVO" useGeneratedKeys="true" keyProperty="syncId">
+        insert into biz.tb_sync_info
+        (
+          intrfc_id
+         ,sourc_file_nm
+         ,table_full_nm
+         ,prior_exec_query
+        )
+        values
+            (
+              #{intrfcId}
+             ,#{sourcFileNm}
+             ,#{tableFullNm}
+             ,#{priorExecQuery}
+            )
+    </insert>
+
+    <update id="updateSyncRequest" parameterType="SyncInfoVO">
+        UPDATE
+            biz.tb_sync_info
+        SET
+            intrfc_id = #{intrfcId}
+          , sourc_file_nm = #{sourcFileNm}
+          , table_full_nm = #{tableFullNm}
+          , prior_exec_query = #{priorExecQuery}
+        WHERE sync_id = #{syncId}
+    </update>
+
+    <insert id="insertLoadingInfo" parameterType="LoadingInfoVO" useGeneratedKeys="true" keyProperty="loadingId">
+        insert into biz.tb_loading_info
+        (
+          colc_id
+        , intrfc_id
+        , recp_file
+        , recp_file_size
+        , recp_file_line_ct
+        , recp_file_skip_ct
+        , define_column_ct
+        , define_header_yn
+        , loading_table_nm
+        , loading_ty
+        , loading_sttus
+        , loading_bf_row_ct
+        , loading_af_row_ct
+        , loading_dt
+        <if test="errFile != null or errFile != ''">, err_file</if>
+        <if test="errLogFile != null or errLogFile != ''">, err_log_file</if>
+        <if test="errInfo != null or errInfo != ''">, err_info</if>
+        )
+        values
+        (
+          #{colcId}
+        , #{intrfcId}
+        , #{recpFile}
+        , #{recpFileSize}
+        , #{recpFileLineCt}
+        , #{recpFileSkipCt}
+        , #{defineColumnCt}
+        , #{defineHeaderYn}
+        , #{loadingTableNm}
+        , #{loadingTy}
+        , #{loadingSttus}
+        , #{loadingBfRowCt}
+        , #{loadingAfRowCt}
+        , to_timestamp(#{loadingDt}, 'YYYY-MM-DD HH24:MI:SS') at time zone 'Asia/Seoul'
+        <if test="errFile != null or errFile != ''">, #{errFile}</if>
+        <if test="errLogFile != null or errLogFile != ''">, #{errLogFile}</if>
+        <if test="errInfo != null or errInfo != ''">, #{errInfo}</if>
+        )
+    </insert>
+
+    <select id="selectSpatialRequest" parameterType="SpatialInfoVO" resultType="SpatialInfoVO">
+        SELECT
+              spatial_id
+             ,intrfc_id
+             ,sourc_file_nm
+             ,table_full_nm
+        FROM biz.tb_spatial_info
+        WHERE intrfc_id = #{intrfcId}
+          AND sourc_file_nm =  #{sourcFileNm}
+    </select>
+
+    <insert id="insertSpatialRequest" parameterType="SpatialInfoVO">
+        insert into biz.tb_spatial_info
+        (
+             intrfc_id
+            ,sourc_file_nm
+            ,table_full_nm
+        )
+        values
+        (
+             #{intrfcId}
+            ,#{sourcFileNm}
+            ,#{tableFullNm}
+        )
+    </insert>
+
+    <update id="updateSpatialRequest" parameterType="SpatialInfoVO">
+        UPDATE
+            biz.tb_spatial_info
+        SET
+            intrfc_id = #{intrfcId}
+          , sourc_file_nm = #{sourcFileNm}
+          , table_full_nm = #{tableFullNm}
+        WHERE spatial_id = #{spatialId}
+    </update>
+</mapper>
