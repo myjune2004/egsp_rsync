@@ -80,7 +80,7 @@ public class TaskMonitor {
 
         //region Task Request
         try{
-            syncService.setSyncTask(serverId);
+            syncService.setReverseSyncTask(serverId);
         }catch (Exception e){
             log.error(e.getMessage());
             //TODO: Insert Task 오류 처리 -> 어떤 오류가 나는지 확인이 필요하다.
