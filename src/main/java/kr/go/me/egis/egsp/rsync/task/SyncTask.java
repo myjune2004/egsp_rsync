@@ -1,7 +1,7 @@
 package kr.go.me.egis.egsp.rsync.task;
 
 import com.google.gson.Gson;
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import kr.go.me.egis.egsp.rsync.biz.service.DbExternalService;
 import kr.go.me.egis.egsp.rsync.biz.service.DbInternalService;
 import kr.go.me.egis.egsp.rsync.biz.service.SyncService;

@@ -1,6 +1,6 @@
 package kr.go.me.egis.egsp.rsync.biz.service.impl;
 
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import kr.go.me.egis.egsp.rsync.biz.dao.SqlIntDAO;
 import kr.go.me.egis.egsp.rsync.biz.service.DbInternalService;
 import kr.go.me.egis.egsp.rsync.biz.vo.ColumnDescVO;

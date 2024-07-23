@@ -7,17 +7,21 @@ server:
 
 ---
 spring:
-  profiles: dev
+  config:
+    activate:
+      on-profile: dev
   driver-class-name: org.postgresql.Driver
   username: egsp
   password: egsp1234!@
   datasource-int:
     driver-class-name: ${spring.driver-class-name}
+    jdbc-url: jdbc:postgresql://172.30.1.40:5432/egis21_egsp
     url: jdbc:postgresql://172.30.1.40:5432/egis21_egsp
     username: ${spring.username}
     password: ${spring.password}
   datasource-ext:
     driver-class-name: ${spring.driver-class-name}
+    jdbc-url: jdbc:postgresql://172.30.1.60:5432/egis21_egsp
     url: jdbc:postgresql://172.30.1.60:5432/egis21_egsp
     username: ${spring.username}
     password: ${spring.password}
@@ -42,7 +46,9 @@ logging:
 
 ---
 spring:
-  profiles: prod
+  config:
+    activate:
+      on-profile: prod
   datasource-int:
     jdbc-url: jdbc:postgresql://10.175.85.148:5432/egis21_egsp
     username: egsp
@@ -52,6 +58,7 @@ spring:
     jdbc-url: jdbc:postgresql://172.30.1.60:5432/egis21_egsp
     username: egsp
     password: egsp1234!@
+
 
 logging:
   level:

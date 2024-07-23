@@ -1,7 +1,7 @@
 package kr.go.me.egis.egsp.rsync.task.engine.thread;
 
 
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import kr.go.me.egis.egsp.rsync.biz.vo.SyncTaskMngtVO;
 import kr.go.me.egis.egsp.rsync.task.engine.TaskMonitor;
 import lombok.extern.slf4j.Slf4j;

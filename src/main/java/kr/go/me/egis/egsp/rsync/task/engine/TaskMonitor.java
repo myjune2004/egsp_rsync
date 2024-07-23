@@ -1,7 +1,7 @@
 package kr.go.me.egis.egsp.rsync.task.engine;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import kr.go.me.egis.egsp.rsync.biz.service.SyncService;
 import kr.go.me.egis.egsp.rsync.biz.service.TaskMngtService;
 import kr.go.me.egis.egsp.rsync.biz.vo.SyncTaskMngtVO;
@@ -28,10 +28,10 @@ import java.util.concurrent.TimeUnit;
 @Service("taskMonitor")
 public class TaskMonitor {
 
-    @Resource
+    @Resource(name = "taskMngtService")
     private TaskMngtService taskMngtService;
 
-    @Resource
+    @Resource(name = "syncService")
     private SyncService syncService;
 
     /** Task execute server id */

@@ -1,6 +1,6 @@
 package kr.go.me.egis.egsp.rsync.biz.service.impl;
 
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import kr.go.me.egis.egsp.rsync.biz.dao.TaskMngtDAO;
 import kr.go.me.egis.egsp.rsync.biz.service.TaskMngtService;
 import kr.go.me.egis.egsp.rsync.biz.vo.SyncTaskMngtVO;

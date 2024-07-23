@@ -1,7 +1,7 @@
 package kr.go.me.egis.egsp.rsync.biz.service.impl;
 
 import com.google.gson.Gson;
-import jakarta.annotation.Resource;
+
 import kr.go.me.egis.egsp.rsync.biz.dao.InterfaceDAO;
 import kr.go.me.egis.egsp.rsync.biz.dao.SyncExtDAO;
 import kr.go.me.egis.egsp.rsync.biz.dao.SyncIntDAO;
@@ -9,7 +9,13 @@ import kr.go.me.egis.egsp.rsync.biz.dao.TaskMngtDAO;
 import kr.go.me.egis.egsp.rsync.biz.service.SyncService;
 import kr.go.me.egis.egsp.rsync.biz.vo.*;
 import kr.go.me.egis.egsp.rsync.utils.DateUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
+@Slf4j
+@Service("syncService")
 public class SyncServiceImpl implements SyncService {
 
     @Resource(name = "syncExtDAO")
