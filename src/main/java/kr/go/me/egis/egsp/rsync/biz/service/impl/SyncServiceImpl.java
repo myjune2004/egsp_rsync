@@ -34,6 +34,8 @@ public class SyncServiceImpl implements SyncService {
 
     @Override
     public void setReverseSyncTask(String serverId) {
+        //TODO: 주석제거 -> 디버깅을 위해 임시 주석함
+
         ReverseSyncInfoVO syncInfoVO = syncExtDAO.selectOneSyncRequest();
         if(syncInfoVO == null){ //Nothing to do for task
             return;
@@ -54,10 +56,15 @@ public class SyncServiceImpl implements SyncService {
 
         try{
             taskMngtDAO.insertTask(taskMngtVO);
+            //REG 상태의 리버스 싱크를 처리했으므로, 중복처리를 방지하기 위해 상태를 업데이트한다.
+            syncInfoVO.setSyncSttus("RUN");
+            syncExtDAO.updateSyncRequestSttus(syncInfoVO);
+
             setReverseSyncJobStart(syncInfoVO.getSyncId());
         }catch (Exception e){
             setReverseSyncJobError(syncInfoVO.getSyncId());
         }
+
     }
 
     @Override
@@ -82,6 +89,11 @@ public class SyncServiceImpl implements SyncService {
     @Override
     public void setReverseSyncJobError(long syncId) {
 
+    }
+
+    @Override
+    public void updateReverseSyncStatus(ReverseSyncInfoVO syncInfoVO) {
+        syncExtDAO.updateSyncRequestSttus(syncInfoVO);
     }
 
     @Override

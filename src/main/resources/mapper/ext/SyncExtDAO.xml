@@ -2,16 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="SyncExtDAO">
-    <select id="selectOneSyncRequest" resultType="SyncInfoVO">
+    <select id="selectOneSyncRequest" resultType="ReverseSyncInfoVO">
         SELECT
               sync_id
              ,intrfc_id
-             ,table_full_nm
+             ,link_hst_id
+             ,table_nm
              ,prior_exec_query
-             ,ext_link_dat_ct
+             ,on_conflict_query
+             ,ext_link_reg_ct
         FROM biz.tb_rsync_info
         WHERE sync_sttus = 'REG'
         ORDER BY sync_id
             LIMIT 1
+    </select>
+
+    <select id="updateSyncRequestSttus" parameterType="ReverseSyncInfoVO">
+        UPDATE biz.tb_rsync_info
+        SET sync_sttus = #{syncSttus}
+        WHERE sync_id = #{syncId}
     </select>
 </mapper>

@@ -9,9 +9,13 @@ public interface DbExternalService {
 
     void delete(DeleteInfoVO deleteInfoVO);
 
+    void deleteSyncData(String tableName, long linkHstId);
+
     long getDataCount(String tableFullName) throws Exception;
 
     CopyVO copyOut(String tableFullName) throws Exception;
+
+    CopyVO copyOutWithLinkHstId(String tableFullName, long linkHstId) throws Exception;
 
     void updateSyncFlag(String tableFullName) throws Exception;
 }

@@ -93,7 +93,7 @@ public class TaskMonitor {
                 taskMngtService.updateTaskStart(taskData.getTaskId());
                 Task task = null;
 
-                if ("TSK090".equals(taskData.getTaskCd())) { //Sync Task
+                if ("TSK100".equals(taskData.getTaskCd())) { //Sync Task
                     task = ApplicationContextProvider.getApplicationContext().getBean(SyncTask.class);
                 }
 

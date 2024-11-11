@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class ReverseSyncInfoVO {
     private long syncId;
+    private long linkHstId;
     private String intrfcId;
     private String bakFileNm;
     private String tableNm;
@@ -15,7 +16,9 @@ public class ReverseSyncInfoVO {
     private long intLinkCopyinCt;
     private long intEnvrBfRowCt;
     private long intEnvrAfRowCt;
+    private long intLoadingId;
     private String syncBginDt;
     private String syncEndDt;
     private String syncInfo;
+    private String onConflictQuery;
 }

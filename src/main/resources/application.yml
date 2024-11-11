@@ -13,23 +13,25 @@ spring:
   driver-class-name: org.postgresql.Driver
   username: egsp
   password: egsp1234!@
+  int-url: jdbc:postgresql://172.30.1.40:5432/egis21_egsp
+  ext-url: jdbc:postgresql://172.30.1.60:5432/egis21_egsp
   datasource-int:
     driver-class-name: ${spring.driver-class-name}
-    jdbc-url: jdbc:postgresql://172.30.1.40:5432/egis21_egsp
-    url: jdbc:postgresql://172.30.1.40:5432/egis21_egsp
+    jdbc-url: ${spring.int-url}
+    url: ${spring.int-url}
     username: ${spring.username}
     password: ${spring.password}
   datasource-ext:
     driver-class-name: ${spring.driver-class-name}
-    jdbc-url: jdbc:postgresql://172.30.1.60:5432/egis21_egsp
-    url: jdbc:postgresql://172.30.1.60:5432/egis21_egsp
+    jdbc-url: ${spring.ext-url}
+    url: ${spring.ext-url}
     username: ${spring.username}
     password: ${spring.password}
 
 gisen:
   task:
     thread-count: 10
-    run-check: 10000
+    run-check: 60000
     stop-check: 60000
 
 sync:

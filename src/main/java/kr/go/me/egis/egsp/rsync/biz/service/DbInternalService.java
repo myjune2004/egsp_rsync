@@ -25,10 +25,10 @@ public interface DbInternalService {
     /**
      * insert into envr.t select * from link.t;
      */
-    int selectInsert(String linkTableName, String envrTableName);
+    int selectInsert(String linkTableName, String envrTableName, String onConflictQuery);
 
     /**
      * insert into envr.t select columns from link.t;
      */
-    int selectInsertColumns(String linkTableName, String envrTableName, String columns);
+    int selectInsertColumns(String linkTableName, String envrTableName, String columns, String onConflictQuery);
 }

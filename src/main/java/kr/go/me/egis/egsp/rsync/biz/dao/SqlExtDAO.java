@@ -5,6 +5,9 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Repository("sqlExtDAO")
 public class SqlExtDAO {
     private final SqlSessionTemplate sqlSession;
@@ -23,5 +26,12 @@ public class SqlExtDAO {
 
     public void delete(DeleteInfoVO deleteInfoVO){
         sqlSession.delete("delete", deleteInfoVO);
+    }
+
+    public void deleteSyncData(String tableName, long linkHstId){
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("linkHstId", linkHstId);
+        params.put("tableName", tableName);
+        sqlSession.delete("deleteSyncData", params);
     }
 }

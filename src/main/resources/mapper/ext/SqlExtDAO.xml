@@ -13,4 +13,8 @@
     <delete id="delete" parameterType="DeleteInfoVO">
         DELETE FROM ${tableName} WHERE ${where}
     </delete>
+
+    <delete id="deleteSyncData" parameterType="Map">
+        DELETE FROM ${tableName} WHERE egsp_link_hst_id = ${linkHstId}
+    </delete>
 </mapper>

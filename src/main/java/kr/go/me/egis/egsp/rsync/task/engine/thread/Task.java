@@ -16,25 +16,27 @@ public abstract class Task implements IdentifiableCallable<Boolean> {
     private TaskMonitor taskMonitor;
 
     volatile boolean cancelled;
-    private TaskData taskData;
+    private Long taskId;
+    private String taskPrmtr;
+    private String taskCd;
 
     public void initData(SyncTaskMngtVO taskInputData){
-        taskData.setTaskId(taskInputData.getTaskId());
-        taskData.setTaskParameter(taskInputData.getTaskPrmtr());
-        taskData.setTaskCode(taskInputData.getTaskCd());
+        this.taskId = taskInputData.getTaskId();
+        this.taskPrmtr = taskInputData.getTaskPrmtr();
+        this.taskCd = taskInputData.getTaskCd();
     }
 
     @Override
     public synchronized Long getId(){
-        return taskData.getTaskId();
+        return taskId;
     }
 
     public String getTaskPrmtr() {
-        return taskData.getTaskParameter();
+        return taskPrmtr;
     }
 
     public String getTaskCd() {
-        return taskData.getTaskCode();
+        return taskCd;
     }
 
     @Override

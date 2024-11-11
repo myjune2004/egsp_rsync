@@ -17,5 +17,9 @@ public class SyncExtDAO {
         return sqlSession.selectOne("selectOneSyncRequest");
     }
 
+    public int updateSyncRequestSttus(ReverseSyncInfoVO reverseSyncInfoVO){
+        return sqlSession.update("updateSyncRequestSttus", reverseSyncInfoVO);
+    }
+
 
 }

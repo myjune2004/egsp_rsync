@@ -16,10 +16,16 @@
 
     <update id="selectInsert" parameterType="HashMap">
         INSERT INTO ${envrTableName} SELECT * FROM ${linkTableName}
+        <if test="onConflictQuery != null and !onConflictQuery.equals('')">
+            ${onConflictQuery}
+        </if>
     </update>
 
     <update id="selectInsertColumns" parameterType="HashMap">
         INSERT INTO ${envrTableName} (${columns}) SELECT ${columns} FROM ${linkTableName}
+        <if test="onConflictQuery != null and !onConflictQuery.equals('')">
+            ${onConflictQuery}
+        </if>
     </update>
 
     <select id="selectColumnDesc" parameterType="String" resultType="ColumnDescVO">

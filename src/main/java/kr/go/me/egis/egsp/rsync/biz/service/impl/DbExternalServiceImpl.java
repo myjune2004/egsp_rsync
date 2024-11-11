@@ -2,7 +2,6 @@ package kr.go.me.egis.egsp.rsync.biz.service.impl;
 
 import javax.annotation.Resource;
 import kr.go.me.egis.egsp.rsync.biz.dao.SqlExtDAO;
-import kr.go.me.egis.egsp.rsync.biz.dao.SqlIntDAO;
 import kr.go.me.egis.egsp.rsync.biz.service.DbExternalService;
 import kr.go.me.egis.egsp.rsync.biz.vo.CopyVO;
 import kr.go.me.egis.egsp.rsync.biz.vo.DeleteInfoVO;
@@ -10,7 +9,6 @@ import kr.go.me.egis.egsp.rsync.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.postgresql.copy.CopyManager;
 import org.postgresql.core.BaseConnection;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -49,21 +47,40 @@ public class DbExternalServiceImpl implements DbExternalService {
     }
 
     @Override
+    public void deleteSyncData(String tableName, long linkHstId) {
+        sqlExtDAO.deleteSyncData(tableName, linkHstId);
+    }
+
+    @Override
     public long getDataCount(String tableFullName) throws Exception {
         return sqlExtDAO.selectDataCount(tableFullName);
     }
 
     @Override
     public CopyVO copyOut(String tableFullName) throws Exception {
-        String copyStat = prepareCopyStatement(tableFullName);
+        String copyStat = prepareCopyStatement(tableFullName, 0);
         String fileName = formattedFileName(tableFullName);
         File copyOutFile = new File(syncWorkPath, fileName);
 
         return copyDataOut(tableFullName, copyStat, copyOutFile);
     }
 
-    private String prepareCopyStatement(String tableFullName) {
-        String query = String.format("SELECT * FROM %s ", tableFullName);
+    @Override
+    public CopyVO copyOutWithLinkHstId(String tableFullName, long linkHstId) throws Exception {
+        String copyStat = prepareCopyStatement(tableFullName, linkHstId);
+        String fileName = formattedFileName(tableFullName);
+        File copyOutFile = new File(syncWorkPath, fileName);
+
+        return copyDataOut(tableFullName, copyStat, copyOutFile);
+    }
+
+    private String prepareCopyStatement(String tableFullName, long linkHstId) throws Exception {
+        String query;
+        if(linkHstId > 0){
+            query = String.format("SELECT * FROM %s WHERE egsp_link_hst_id = %s", tableFullName, linkHstId);
+        }else{
+            query = String.format("SELECT * FROM %s", tableFullName);
+        }
 
         String copyStat =
                 "COPY " +

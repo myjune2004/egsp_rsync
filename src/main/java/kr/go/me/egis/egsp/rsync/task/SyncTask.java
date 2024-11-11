@@ -36,12 +36,16 @@ public class SyncTask extends Task {
     private final List<ErrorVO> errorList = new LinkedList<>();
     private ReverseSyncInfoVO reverseSyncInfoVO;
     private InterfaceVO interfaceVO;
+    private long syncId;
+    private long linkHstId;
 
     private String interfaceId;
     private String tblName;
+    private String extLinkTblName;
     private String linkTblName;
     private String envrTblName;
     private String reversePriorExecQuery;
+    private String onConflictQuery;
     private String priorExecQuery;
     private String syncKey;
 
@@ -51,16 +55,23 @@ public class SyncTask extends Task {
         try{
             Gson gson = new Gson();
             this.reverseSyncInfoVO = gson.fromJson(json, ReverseSyncInfoVO.class);
+            this.syncId = reverseSyncInfoVO.getSyncId();
+            this.linkHstId = reverseSyncInfoVO.getLinkHstId();
             this.interfaceId = this.reverseSyncInfoVO.getIntrfcId();
             this.tblName = this.reverseSyncInfoVO.getTableNm();
+            if(!this.tblName.contains("_api")){
+                this.tblName = this.tblName + "_api";
+            }
+            this.extLinkTblName = "extlink." + this.tblName;
             this.linkTblName = "link." + this.tblName;
             this.envrTblName = "envr." + this.tblName;
             this.reversePriorExecQuery = this.reverseSyncInfoVO.getPriorExecQuery();
+            this.onConflictQuery = this.reverseSyncInfoVO.getOnConflictQuery();
             this.interfaceVO = syncService.selectInterface(interfaceId);
             if(this.interfaceVO == null){
                 throw new Exception("인터페이스 없음:" + interfaceId);
             }
-            this.syncKey = this.reverseSyncInfoVO.getSyncId() + "_" + DateUtils.getCurrentDate_yyyyMMddHHmm();
+            this.syncKey = syncId + "_" + linkHstId;
             this.priorExecQuery = null;
         }catch (Exception e){
             String errorMessage = "태스크 실행 파라미터 정보 없음, " + e.getMessage();
@@ -98,7 +109,7 @@ public class SyncTask extends Task {
             //1. 외부 테이블 Copy 명령어로 파일 생성
             File copyFile = null;
             try {
-                CopyVO copyVO = dbExternalService.copyOut(linkTblName);
+                CopyVO copyVO = dbExternalService.copyOutWithLinkHstId(extLinkTblName, linkHstId);
                 copyFile = copyVO.getCopyFile();
                 long extLinkCopyoutCount = copyVO.getExportCount();
                 reverseSyncInfoVO.setExtLinkCopyoutCt(extLinkCopyoutCount);
@@ -109,7 +120,7 @@ public class SyncTask extends Task {
 
             //2. 내부 extlink 스키마 테이블 삭제
             try{
-                dbInternalService.truncate(linkTblName);
+                dbInternalService.truncate(extLinkTblName);
             }catch (Exception e){
                 String eMsg = "Delete Int. [extlink]Table: " + e.getMessage();
                 throw new Exception(eMsg, e);
@@ -117,7 +128,7 @@ public class SyncTask extends Task {
 
             //3. 내부 extlink 스키마 테이블 동기화
             try{
-                long intLinkCopyinCount = dbInternalService.copyIn(linkTblName, copyFile);
+                long intLinkCopyinCount = dbInternalService.copyIn(extLinkTblName, copyFile);
                 reverseSyncInfoVO.setIntLinkCopyinCt(intLinkCopyinCount);
             }catch (Exception e){
                 String eMsg = "Data insert to Int. [extlink]Table by CopyIn: " + e.getMessage();
@@ -134,12 +145,12 @@ public class SyncTask extends Task {
                     case "DELINS":
                         //truncate
                         dbInternalService.truncate(envrTblName);
-                        dbInternalService.selectInsert(linkTblName, envrTblName);
+                        dbInternalService.selectInsert(extLinkTblName, envrTblName, onConflictQuery);
                         break;
                     case "DELAPD": //아직 특별히 조건을 처리해야하는 경우는 없다.
                     default:
                         String columns = getColumnsWithoutEgspLinkId();
-                        dbInternalService.selectInsertColumns(linkTblName, envrTblName, columns);
+                        dbInternalService.selectInsertColumns(extLinkTblName, envrTblName, columns, onConflictQuery);
                 }
                 long intEnvrAfterRowCount = dbInternalService.getDataCount(envrTblName);
                 reverseSyncInfoVO.setIntEnvrAfRowCt(intEnvrAfterRowCount);
@@ -150,10 +161,10 @@ public class SyncTask extends Task {
 
             //5. 내/외부 extlink 스키마 테이블 삭제
             try{
-                dbInternalService.truncate(linkTblName);
-                dbExternalService.truncate(linkTblName);
+                dbInternalService.truncate(extLinkTblName);
+                dbExternalService.deleteSyncData(extLinkTblName, reverseSyncInfoVO.getLinkHstId());
             }catch (Exception e){
-                String eMsg = "Truncate Int.,Ext. [extlink]Table: " + e.getMessage();
+                String eMsg = "Truncate|Delete Int.,Ext. [extlink]Table: " + e.getMessage();
                 throw new Exception(eMsg, e);
             }
 
@@ -163,8 +174,13 @@ public class SyncTask extends Task {
                 syncInfoVO.setIntrfcId(interfaceId);
                 syncInfoVO.setSourcFileNm(syncKey);
                 syncInfoVO.setTableFullNm(envrTblName);
+                String loadingTy = interfaceVO.getLoadingTy();
+                if(loadingTy.equalsIgnoreCase("DELINS")){
+                    priorExecQuery = "truncate";
+                }
                 if(priorExecQuery != null)
                     syncInfoVO.setPriorExecQuery(priorExecQuery);
+
                 syncService.insertSyncRequest(syncInfoVO);
             }catch (Exception e){
                 String eMsg = "Insert Sync Request [Int-->Ext]: " + e.getMessage();
@@ -196,6 +212,7 @@ public class SyncTask extends Task {
             setError("SyncTask.atomicFunction", errorMessage);
             reverseSyncInfoVO.setSyncSttus("ERR");
         }
+        syncService.updateReverseSyncStatus(reverseSyncInfoVO);
         //[업무가 완료되면 [true]를 리턴한다.
         return true;
     }
@@ -223,8 +240,7 @@ public class SyncTask extends Task {
     }
 
     private String getColumnsWithoutEgspLinkId(){
-        String table = "link." + tblName;
-        List<ColumnDescVO> columnDescVOList = dbInternalService.getColumnDescList(table);
+        List<ColumnDescVO> columnDescVOList = dbInternalService.getColumnDescList(extLinkTblName);
         List<String> columns = new LinkedList<>();
         for (ColumnDescVO columnDescVO : columnDescVOList) {
             String columnName = columnDescVO.getColumnName();

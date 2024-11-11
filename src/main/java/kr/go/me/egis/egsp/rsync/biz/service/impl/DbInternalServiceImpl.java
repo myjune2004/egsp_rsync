@@ -95,19 +95,21 @@ public class DbInternalServiceImpl implements DbInternalService {
     }
 
     @Override
-    public int selectInsert(String linkTableName, String envrTableName) {
+    public int selectInsert(String linkTableName, String envrTableName, String onConflictQuery) {
         HashMap<String, String> map = new HashMap<>();
         map.put("envrTableName", envrTableName);
         map.put("linkTableName", linkTableName);
+        map.put("onConflictQuery", onConflictQuery);
         return sqlIntDAO.selectInsert(map);
     }
 
     @Override
-    public int selectInsertColumns(String linkTableName, String envrTableName, String columns) {
+    public int selectInsertColumns(String linkTableName, String envrTableName, String columns, String onConflictQuery) {
         HashMap<String, String> map = new HashMap<>();
         map.put("envrTableName", envrTableName);
         map.put("linkTableName", linkTableName);
         map.put("columns", columns);
+        map.put("onConflictQuery", onConflictQuery);
         return sqlIntDAO.selectInsertColumns(map);
     }
 }

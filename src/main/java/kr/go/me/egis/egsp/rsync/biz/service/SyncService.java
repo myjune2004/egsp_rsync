@@ -13,6 +13,8 @@ public interface SyncService {
 
     void setReverseSyncJobError(long syncId);
 
+    void updateReverseSyncStatus(ReverseSyncInfoVO syncInfoVO);
+
     void updateReverseSyncInfo(ReverseSyncInfoVO syncInfoVO);
 
     InterfaceVO selectInterface(String intrfcId);
